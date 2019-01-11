@@ -29,6 +29,7 @@ export function getFilterJsonSchemaFor(modelCtor: typeof Model): JsonSchema {
         type: 'object',
         // TODO(bajtos) enumerate "model" properties
         // See https://github.com/strongloop/loopback-next/issues/1748
+        getFieldsJsonSchemaFor(modelCtor),
         additionalProperties: true,
       },
 
@@ -89,9 +90,21 @@ export function getFilterJsonSchemaFor(modelCtor: typeof Model): JsonSchema {
 export function getWhereJsonSchemaFor(modelCtor: typeof Model): JsonSchema {
   const schema: JsonSchema = {
     type: 'object',
-    // TODO(bajtos) enumerate "model" properties and operators like "and"
-    // See https://github.com/strongloop/loopback-next/issues/1748
     additionalProperties: true,
   };
+  return schema;
+}
+
+export function getFieldsJsonSchemaFor(modelCtor: typeof Model): JsonSchema {
+  const schema: JsonSchema = {
+      type: 'object',
+      properties: Object.assign(
+          {},
+          ...Object.keys(modelCtor.definition.properties).map(k => ({
+              [k]: {type: 'boolean'},
+          })),
+      ),
+      additionalProperties: true,
+  }
   return schema;
 }
